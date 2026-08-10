@@ -27,7 +27,7 @@ async def set_balance(ctx, amount: int):
     await ctx.send(f'تم تعديل رصيدك بنجاح! رصيدك الحالي هو: {amount}')
 
 class MyServer(BaseHTTPRequestHandler):
-    def do_GET(self):
+    def do_GET(𝑇𝑜𝑘𝑒):
         𝑇𝑜𝑘𝑒.send_response(200)
         𝑇𝑜𝑘𝑒.send_header("Content-type", "text/html")
         𝑇𝑜𝑘𝑒.end_headers()
