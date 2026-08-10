@@ -6,7 +6,7 @@ import threading
 
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True          # ضفنا هاي عشان المنشن بالتحويل يشتغل صح
+intents.members = True          
 bot = commands.Bot(command_prefix='', intents=intents)
 
 balances = {}
@@ -15,7 +15,6 @@ balances = {}
 async def on_ready():
     print(f'Bot is ready: {bot.user}')
 
-# 1. أمر الرصيد وصار يبعت على الخاص علطول
 @bot.command(name="c")
 async def mizania(ctx):
     user_id = ctx.author.id
@@ -23,12 +22,22 @@ async def mizania(ctx):
     balances[user_id] = balance
     await ctx.author.send(f'رصيدك الحالي: {balance} عملة.')
 
+# تعديل كود السيرفر عشان يلقط البورت تبع ريندر وما يطفي البوت
 class MyServer(BaseHTTPRequestHandler):
-    def do_GET(Toke):
-        Toke.send_response(200)
-        Toke.send_header("Content-type", "text/html")
-        Toke.end_headers()
-        Toke.wfile.write(b"Bot is Running!")
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(b"Bot is Running!")
+
+def run_server():
+    # ريندر بيعطي البورت بشكل تلقائي في المتغير os.environ.get('PORT')
+    port = int(os.environ.get('PORT', 8080))
+    server = HTTPServer(('0.0.0.0', port), MyServer)
+    server.serve_forever()
+
+# تشغيل السيرفر بالخلفية
+threading.Thread(target=run_server, daemon=True).start()
 
 @bot.command()
 async def set_balance(ctx, amount: int):
@@ -36,18 +45,14 @@ async def set_balance(ctx, amount: int):
     balances[user_id] = amount
     await ctx.send(f'تم تعديل رصيدك بنجاح! رصيدك الحالي هو {amount}')
 
-# 2. أمر التحويل شغال بدون علامة تعجب (تكتب تالي: t @منشن 50)
 @bot.command(name="t")
 async def transfer(ctx, member: discord.Member, amount: int):
     sender_id = ctx.author.id
     receiver_id = member.id
-    
     if amount <= 0:
         await ctx.send("المبلغ لازم يكون أكبر من صفر! ❌")
         return
-        
     sender_balance = balances.get(sender_id, 1000)
-    
     if sender_balance < amount:
         await ctx.send("رصيدك مش كافي للتحويل! ❌")
     else:
@@ -55,10 +60,9 @@ async def transfer(ctx, member: discord.Member, amount: int):
         balances[receiver_id] = balances.get(receiver_id, 1000) + amount
         await ctx.send(f'تم تحويل {amount} عملة إلى {member.mention} بنجاح! 🎉')
 
-# 3. أمر سري عشان أنت تعطي عملات (تكتب تالي: give @منشن 500)
 @bot.command(name="give")
 async def give_money(ctx, member: discord.Member, amount: int):
-    # !!! حط الآيدي تبع حسابك بالديسكورد بدل الأرقام اللي تحت عشان ما حدا يسرق الأمر !!!
+    # !!! حط الآيدي تبع حسابك بالديسكورد بدل الأرقام اللي تحت !!!
     if ctx.author.id == 123456789012345678: 
         user_id = member.id
         balances[user_id] = balances.get(user_id, 1000) + amount
