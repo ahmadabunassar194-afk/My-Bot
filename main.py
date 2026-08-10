@@ -96,3 +96,5 @@ keep_alive()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 client.run(TOKEN)
+
+gunicorn main:app
