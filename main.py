@@ -32,6 +32,23 @@ class MyServer(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.wfile.write(b"Bot is Running!")
+@bot.command()
+async def set_balance(ctx, amount: int):
+    user_id = ctx.author.id
+    balances[user_id] = amount
+    await ctx.send(f'تم تعديل رصيدك بنجاح! رصيدك الحالي هو: {amount}')
+
+@bot.command()
+async def transfer(ctx, member: discord.Member, amount: int):
+    sender_id = ctx.author.id
+    receiver_id = member.id
+    sender_balance = balances.get(sender_id, 1000)
+    if sender_balance < amount:
+        await ctx.send('عذراً، رصيدك غير كافي لإتمام عملية التحويل!')
+        return
+    balances[sender_id] = sender_balance - amount
+    balances[receiver_id] = balances.get(receiver_id, 1000) + amount
+    await ctx.send(f'تم تحويل {amount} بنجاح إلى {member.mention}! رصيدك المتبقي: {balances[sender_id]}')
 
 def run_web_server():
     server = HTTPServer(('0.0.0.0', int(os.environ.get('PORT', 8080))), MyServer)
