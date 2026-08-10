@@ -1,4 +1,16 @@
+import os
 import discord
+
+# 1. يجب تعريف client أولاً وإعطائه الصلاحيات (Intents)
+intents = discord.Intents.default()
+client = discord.Client(intents=intents)
+
+# ... بقية كود الأحداث والـ events الخاص بك ...
+
+# 2. سطر التشغيل في نهاية الملف
+TOKEN = os.getenv('DISCORD_TOKEN')
+client.run(TOKEN)
+
 from discord.ext import commands
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
