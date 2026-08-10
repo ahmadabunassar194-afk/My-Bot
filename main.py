@@ -6,7 +6,7 @@ import threading
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='', intents=intents)
 
 balances = {}
 
@@ -14,7 +14,7 @@ balances = {}
 async def on_ready():
     print(f'Bot is ready: {bot.user}')
 
-@bot.command(name="ميزانية")
+@bot.command(name="c")
 async def mizania(ctx):
 
     user_id = ctx.author.id
