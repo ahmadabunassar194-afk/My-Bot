@@ -28,10 +28,10 @@ async def set_balance(ctx, amount: int):
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(b"Bot is Running!")
+        𝑇𝑜𝑘𝑒.send_response(200)
+        𝑇𝑜𝑘𝑒.send_header("Content-type", "text/html")
+        𝑇𝑜𝑘𝑒.end_headers()
+        𝑇𝑜𝑘𝑒.wfile.write(b"Bot is Running!")
 @bot.command()
 async def set_balance(ctx, amount: int):
     user_id = ctx.author.id
