@@ -11,6 +11,14 @@ client = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f"Logged in as {client.user.name}")
 
+@client.command(name="c")
+async def check_balance_short(ctx):
+    await ctx.send(f"رصيدك الحالي: 1000 عملة.")
+
+@client.command(name="c")
+async def check_balance_long(ctx):
+    await ctx.send(f"رصيدك الحالي: 1000 عملة.")
+
 @client.command()
 async def ping(ctx):
     await ctx.send("pong!")
