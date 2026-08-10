@@ -5,7 +5,7 @@ from discord.ext import commands
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = commands.Bot(command_prefix="!", intents=intents)
+client = commands.Bot(command_prefix="", intents=intents)
 
 user_balances = {}
 
@@ -18,7 +18,7 @@ def get_balance(user_id):
 async def on_ready():
     print(f"Logged in as {client.user.name}")
 
-@client.command(name="c", aliases=["ميزانية"])
+@client.command(name="c")
 async def check_balance(ctx):
     balance = get_balance(ctx.author.id)
     await ctx.send(f"رصيدك الحالي: {balance} عملة.")
