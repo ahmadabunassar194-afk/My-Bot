@@ -22,7 +22,6 @@ async def mizania(ctx):
     balances[user_id] = balance
     await ctx.author.send(f'رصيدك الحالي: {balance} عملة.')
 
-# تعديل كود السيرفر عشان يلقط البورت تبع ريندر وما يطفي البوت
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -31,12 +30,11 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(b"Bot is Running!")
 
 def run_server():
-    # ريندر بيعطي البورت بشكل تلقائي في المتغير os.environ.get('PORT')
     port = int(os.environ.get('PORT', 8080))
     server = HTTPServer(('0.0.0.0', port), MyServer)
     server.serve_forever()
 
-# تشغيل السيرفر بالخلفية
+# تشغيل السيرفر بالخلفية عشان ريندر ما يطفي البوت
 threading.Thread(target=run_server, daemon=True).start()
 
 @bot.command()
@@ -62,10 +60,14 @@ async def transfer(ctx, member: discord.Member, amount: int):
 
 @bot.command(name="give")
 async def give_money(ctx, member: discord.Member, amount: int):
-    # !!! حط الآيدي تبع حسابك بالديسكورد بدل الأرقام اللي تحت !!!
+    # حط الآيدي تبع حسابك بالديسكورد بدل الأرقام اللي تحت
     if ctx.author.id == 123456789012345678: 
         user_id = member.id
         balances[user_id] = balances.get(user_id, 1000) + amount
         await ctx.send(f'تم إضافة {amount} عملة لحساب {member.mention} بنجاح! 💰')
     else:
         await ctx.send('ما عندك صلاحية يا غالي! ❌')
+
+# ⚠️ السطر هاد هو الأهم وهو اللي كان ناقص وبشغل البوت 24 ساعة
+# حط التوكن تبع البوت تبعك مكان كلمة YOUR_BOT_TOKEN_HERE
+bot.run('YOUR_BOT_TOKEN_HERE')
