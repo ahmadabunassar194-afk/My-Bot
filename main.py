@@ -70,4 +70,5 @@ async def give_money(ctx, member: discord.Member, amount: int):
 
 # ⚠️ السطر هاد هو الأهم وهو اللي كان ناقص وبشغل البوت 24 ساعة
 # حط التوكن تبع البوت تبعك مكان كلمة YOUR_BOT_TOKEN_HERE
-bot.run('YOUR_BOT_TOKEN_HERE')
+bot.run('70a8582c0aada46ef125adebca1fc69d4716e5bbb9e5364e63e3e9fcbc21f8e0')
+
