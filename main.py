@@ -25,7 +25,8 @@ async def mizania(ctx):
 async def set_balance(ctx, amount: int):
     user_id = ctx.author.id
     balances[user_id] = amount
-    await ctx.send(f'تم تعديل رصيدك بنجاح! رصيدك الحالي هو: {amount}')
+    await ctx.send(f'تم تعديل رصيدك بنجاح! رصيدك الحالي هو {amount}')
+
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(𝑇𝑜𝑘𝑒):
