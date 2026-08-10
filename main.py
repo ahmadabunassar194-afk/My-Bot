@@ -23,11 +23,11 @@ async def mizania(ctx):
     await ctx.author.send(f'رصيدك الحالي: {balance} عملة.')
 
 class MyServer(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(b"Bot is Running!")
+    def do_GET(𝑇𝑜𝑘𝑒):
+        𝑇𝑜𝑘𝑒.send_response(200)
+        𝑇𝑜𝑘𝑒.send_header("Content-type", "text/html")
+        𝑇𝑜𝑘𝑒.end_headers()
+        𝑇𝑜𝑘𝑒.wfile.write(b"Bot is Running!")
 
 def run_server():
     port = int(os.environ.get('PORT', 8080))
@@ -69,6 +69,14 @@ async def give_money(ctx, member: discord.Member, amount: int):
         await ctx.send('ما عندك صلاحية يا غالي! ❌')
 
 
-bot.run(os.environ.get('70a8582c0aada46ef125adebca1fc69d4716e5bbb9e5364e63e3e9fcbc21f8e0'))
+import os
+import discord
+
+# قراءة التوكن من متغيرات البيئة التي أضفتها في Render
+TOKEN = os.getenv('DISCORD_TOKEN')
+
+# تشغيل البوت
+client.run(TOKEN)
+
 
 
