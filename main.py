@@ -14,8 +14,9 @@ balances = {}
 async def on_ready():
     print(f'Bot is ready: {bot.user}')
 
-@bot.command()
-async def 𝑇𝑜𝑘𝑒(ctx):
+@bot.command(name="ميزانية")
+async def mizania(ctx):
+
     user_id = ctx.author.id
     balance = balances.get(user_id, 1000)
     balances[user_id] = balance
