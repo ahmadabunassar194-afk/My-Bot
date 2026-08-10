@@ -68,8 +68,7 @@ async def give_money(ctx, member: discord.Member, amount: int):
     else:
         await ctx.send('ما عندك صلاحية يا غالي! ❌')
 
-# ⚠️ السطر هاد هو الأهم وهو اللي كان ناقص وبشغل البوت 24 ساعة
-# حط التوكن تبع البوت تبعك مكان كلمة 
+
 bot.run(os.environ.get('70a8582c0aada46ef125adebca1fc69d4716e5bbb9e5364e63e3e9fcbc21f8e0'))
 
 
