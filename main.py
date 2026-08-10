@@ -26,7 +26,7 @@ async def check_balance(ctx):
 @client.command(name="تحويل")
 async def transfer_money(ctx, member: discord.Member = None, amount: int = None):
     if member is None or amount is None or amount <= 0:
-        await ctx.send("❌ الاستخدام الصحيح للأمر: !تحويل @اسم_الشخص المبلغ")
+        await ctx.send("❌ الاستخدام الصحيح للأمر: تحويل @اسم_الشخص المبلغ")
         return
 
     sender_id = ctx.author.id
@@ -53,6 +53,25 @@ async def transfer_money(ctx, member: discord.Member = None, amount: int = None)
         await member.send(f"تم ارسل 𝑇𝑜𝑘𝑒\nوصلتك حوالة بمبلغ: {amount} عملة من {ctx.author.name}")
     except discord.Forbidden:
         await ctx.send(f"⚠️ {member.mention} لقد تم التحويل، ولكن لم أتمكن من إرسال رسالة خاصة لك لأن حسابك مغلق للخاص.")
+
+@client.command(name="اضف")
+@commands.has_permissions(administrator=True)
+async def add_money(ctx, member: discord.Member = None, amount: int = None):
+    if member is None or amount is None or amount <= 0:
+        await ctx.send("❌ الاستخدام الصحيح للأمر: اضف @الشخص المبلغ")
+        return
+
+    user_id = member.id
+    if user_id not in user_balances:
+        user_balances[user_id] = 1000
+        
+    user_balances[user_id] += amount
+    await ctx.send(f"💰 تم إضافة {amount} عملة إلى حساب {member.mention} بنجاح!")
+
+@add_money.error
+async def add_money_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("❌ عذراً، هذا الأمر مخصص للإدارة فقط!")
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 client.run(TOKEN)
