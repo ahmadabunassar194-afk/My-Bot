@@ -92,7 +92,7 @@ async def add_money_error(ctx, error):
         await ctx.send("❌ عذراً، هذا الأمر مخصص للإدارة فقط!")
 
 # تشغيل السيرفر الوهمي قبل تشغيل البوت
-keep_alive()
+
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 client.run(TOKEN)
