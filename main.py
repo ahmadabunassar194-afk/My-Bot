@@ -30,7 +30,7 @@ keep_alive()
 # ==========================================
 intents = discord.Intents.default()
 intents.message_content = True
-client = commands.Bot(command_prefix="c", intents=intents)
+client = commands.Bot(command_prefix="p", intents=intents)
 
 # قاموس لتخزين رصيد المستخدمين
 user_balances = {}
@@ -63,9 +63,9 @@ async def add_money_error(ctx, error):
         await ctx.send("❌ الأمر مخصص للإدارة فقط")
 
 # ==========================================
-# 4. أمر رصيد c (بدون علامة تعجب)
+# 4. أمر رصيد p (بدون علامة تعجب)
 # ==========================================
-@client.command(name="c")
+@client.command(name="p")
 async def check_balance_c(ctx, member: discord.Member = None):
     if member is None:
         member = ctx.author  # إذا لم يتم تحديد شخص، يعرض رصيد صاحب الأمر
@@ -80,15 +80,15 @@ async def check_balance_c(ctx, member: discord.Member = None):
 # أمر رصيد بالعربي (بدون علامة تعجب)
 @client.command(name="رصيد")
 async def check_balance_arabic(ctx, member: discord.Member = None):
-    await ctx.invoke(client.get_command('c'), member=member)
+    await ctx.invoke(client.get_command('p'), member=member)
 # أمر رصيد بالعربي (بدون علامة تعجب)
 @client.command(name="رصيد")
 async def check_balance_arabic(ctx, member: discord.Member = None):
     member = member or ctx.author
     # تصليح السطر المقطوع وتمرير العضو بشكل صحيح
-    await ctx.invoke(client.get_command('c'), member=member)
+    await ctx.invoke(client.get_command('p'), member=member)
 
-@client.command(name="c")
+@client.command(name="p")
 async def transfer_c(ctx, member: discord.Member, amount: int): # ضفنا : int هون
     # التأكد من أن المستخدم لا يحول لنفسه
     if ctx.author.id == member.id:
