@@ -1,14 +1,34 @@
+from flask import Flask
+from threading import Thread
+import os
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "البوت شغال تمام!"
+
+def run():
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+keep_alive()
+
 import os
 import discord
 from discord.ext import commands
 from threading import Thread
 from flask import Flask
 
-# إنشاء سيرفر وهمي لتخطي نظام الفحص في Render
+
 app = Flask('')
 
-@app.route('/')
-def home():
+
+def 
     return "Bot is alive!"
 
 def run_flask():
