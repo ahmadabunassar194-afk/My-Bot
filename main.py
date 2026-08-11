@@ -1,13 +1,35 @@
 import os
 import discord
 from discord.ext import commands
+from threading import Thread
+from flask import Flask
 
 # ==========================================
-# 1. إعدادات البوت الأساسية والصلاحيات (البادئة فارغة)
+# 1. نظام الـ Keep Alive عشان البوت ما يطفي على Render
+# ==========================================
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "البوت شغال تمام وبدون مشاكل!"
+
+def run():
+    # Render بيطلب تحديد المنفذ تلقائياً أو بيعطيك 8080
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# تشغيل السيرفر الداخلي
+keep_alive()
+
+# ==========================================
+# 2. إعدادات البوت الأساسية والصلاحيات (البادئة فارغة)
 # ==========================================
 intents = discord.Intents.default()
 intents.message_content = True
-# تم إلغاء علامة التعجب وجعل البادئة فارغة تماماً
 client = commands.Bot(command_prefix="", intents=intents)
 
 # قاموس لتخزين رصيد المستخدمين
@@ -18,7 +40,7 @@ async def on_ready():
     print(f'Logged in as {client.user.name}')
 
 # ==========================================
-# 2. أمر إضافة فلوس - مخصص للإدارة فقط (اضف)
+# 3. أمر إضافة فلوس - مخصص للإدارة فقط (اضف)
 # ==========================================
 @client.command(name="اضف")
 @commands.has_permissions(administrator=True)
@@ -58,7 +80,6 @@ async def check_balance_c(ctx, member: discord.Member = None):
 # أمر رصيد بالعربي (بدون علامة تعجب)
 @client.command(name="رصيد")
 async def check_balance_arabic(ctx, member: discord.Member = None):
-    # عند كتابة "رصيد" يتم استدعاء أمر c تلقائياً
     await ctx.invoke(client.get_command('c'), member=member)
 
 # ==========================================
