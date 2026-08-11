@@ -81,6 +81,38 @@ async def check_balance_c(ctx, member: discord.Member = None):
 @client.command(name="رصيد")
 async def check_balance_arabic(ctx, member: discord.Member = None):
     await ctx.invoke(client.get_command('c'), member=member)
+@client.command(name="تحويل")
+async def transfer(ctx, member: discord.Member, amount: int):
+    # التأكد من أن المبلغ المدخل أكبر من صفر
+    if amount <= 0:
+        await ctx.send("❌ يرجى إدخال مبلغ صحيح أكبر من الصفر.")
+        return
+
+    author_id = ctx.author.id
+    target_id = member.id
+
+    # التأكد من وجود حساب للمرسل وتوفر الرصيد
+    if author_id not in user_balances or user_balances[author_id] < amount:
+        await ctx.send("❌ ليس لديك رصيد كافٍ لإتمام هذه العملية.")
+        return
+
+    # التأكد من وجود حساب للمستلم في قاعدة البيانات
+    if target_id not in user_balances:
+        user_balances[target_id] = 1000  # الرصيد الافتراضي للاعب الجديد
+
+    # خصم المبلغ من المرسل وإضافته للمستلم
+    user_balances[author_id] -= amount
+    user_balances[target_id] += amount
+
+    # إرسال رسالة تأكيد في السيرفر
+    await ctx.send(f"✅ تم تحويل {amount} بنجاح إلى {member.mention}.")
+
+    # إرسال رسالة خاصة للمستلم
+    try:
+        await member.send(f"💰 وصلتك حوالة مالية بقيمة **{amount}** من {ctx.author.mention} في سيرفر **{ctx.guild.name}**.")
+    except discord.Forbidden:
+        # في حال كان المستلم مغلق الخاص، يرسل البوت تنبيه في السيرفر
+        await ctx.send(f"⚠️ {member.mention} لقد أرسلت لك مبلغاً، لكن خاصك مغلق!")
 
 # ==========================================
 # 5. تشغيل البوت بالتوكن المحمي
