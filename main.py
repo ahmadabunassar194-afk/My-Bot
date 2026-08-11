@@ -63,9 +63,9 @@ async def add_money_error(ctx, error):
         await ctx.send("❌ الأمر مخصص للإدارة فقط")
 
 # ==========================================
-# 4. أمر رصيد c (بدون علامة تعجب)
+# 4. أمر رصيد p (بدون علامة تعجب)
 # ==========================================
-@client.command(name="c")
+@client.command(name="p")
 async def check_balance_c(ctx, member: discord.Member = None):
     if member is None:
         member = ctx.author  # إذا لم يتم تحديد شخص، يعرض رصيد صاحب الأمر
@@ -80,8 +80,8 @@ async def check_balance_c(ctx, member: discord.Member = None):
 # أمر رصيد بالعربي (بدون علامة تعجب)
 @client.command(name="رصيد")
 async def check_balance_arabic(ctx, member: discord.Member = None):
-    await ctx.invoke(client.get_command('c'), member=member)
-@client.command(name="c")
+    await ctx.invoke(client.get_command('p'), member=member)
+@client.command(name="p")
 async def transfer_c(ctx, member: discord.Member, amount: int):
     # التأكد من أن المستخدم لا يحول لنفسه
     if ctx.author.id == member.id:
