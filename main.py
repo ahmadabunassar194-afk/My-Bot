@@ -26,7 +26,6 @@ def keep_alive():
 # =======================================
 intents = discord.Intents.default()
 intents.message_content = True
-# رجعنا البادئة لـ c عشان يشتغل بـ cc
 client = commands.Bot(command_prefix="c", intents=intents)
 
 # قاموس لتخزين رصيد المستخدمين
@@ -35,6 +34,12 @@ user_balances = {}
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user.name}")
+
+# دالة مساعدة عشان تعطي رصيد مبدئي لأي عضو جديد
+def get_balance(user_id):
+    if user_id not in user_balances:
+        user_balances[user_id] = 1000
+    return user_balances[user_id]
 
 # =======================================
 # 3. أمر إضافة فلوس (مخصص للإدارة فقط)
@@ -48,8 +53,7 @@ async def add_money(ctx, member: discord.Member = None, amount: int = None):
         return
         
     user_id = member.id
-    if user_id not in user_balances:
-        user_balances[user_id] = 1000
+    get_balance(user_id) # للتأكد إنه معرف في القاموس
         
     user_balances[user_id] += amount
     await ctx.send(f"💰 تم إضافة {amount} لحساب {member.mention}")
@@ -60,18 +64,14 @@ async def add_money_error(ctx, error):
         await ctx.send("❌ الأمر مخصص للإدارة فقط!")
 
 # =======================================
-# 4. أوامر الرصيد (الآن يشتغل بـ cc أو cرصيد)
+# 4. أوامر الرصيد (يشتغل بـ cc أو cرصيد)
 # =======================================
 @client.command(name="c")
 async def check_balance_c(ctx, member: discord.Member = None):
     if member is None:
         member = ctx.author
         
-    user_id = member.id
-    if user_id not in user_balances:
-        user_balances[user_id] = 1000 # رصيد ابتدائي لأول مرة
-        
-    balance = user_balances[user_id]
+    balance = get_balance(member.id)
     await ctx.send(f"💳 رصيد {member.mention}: {balance} عملة.")
 
 @client.command(name="رصيد")
@@ -79,7 +79,46 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
     await ctx.invoke(client.get_command('c'), member=member)
 
 # =======================================
-# 5. تشغيل السيرفر الداخلي والبوت
+# 5. أمر تحويل الفلوس (ومراسلة المستلم في الخاص)
+# الاستخدام: ctransfer @الشخص المبلغ
+# =======================================
+@client.command(name="transfer")
+async def transfer_money(ctx, member: discord.Member = None, amount: int = None):
+    if member is None or amount is None:
+        await ctx.send("❌ الاستخدام: ctransfer @الشخص المبلغ")
+        return
+        
+    if member.id == ctx.author.id:
+        await ctx.send("❌ ما بتقدر تحول فلوس لنفسك يا غالي!")
+        return
+        
+    if amount <= 0:
+        await ctx.send("❌ لازم تحول مبلغ أكبر من صفر!")
+        return
+        
+    author_bal = get_balance(ctx.author.id)
+    get_balance(member.id) # التأكد من وجود حساب للمستلم
+    
+    if author_bal < amount:
+        await ctx.send("❌ رصيدك ما بكفي عشان تعمل هالتحويل!")
+        return
+        
+    # الخصم والإضافة بالخلفية
+    user_balances[ctx.author.id] -= amount
+    user_balances[member.id] += amount
+    
+    # رسالة التأكيد بالشات العام
+    await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى {member.mention}!")
+    
+    # إرسال رسالة خاصة للشخص اللي استلم العملات (مع حماية الكود لو الخاص مقفل)
+    try:
+        await member.send(f"💰 وصلتك حوالة مالية! لقد استلمت `{amount}` عملة من {ctx.author.name} في سيرفر **{ctx.guild.name}**.")
+    except discord.Forbidden:
+        # إذا خاص المستلم مقفل، البوت بيكتب تنبيه خفيف بالشات وبكمل شغل عادي بدون إيرور
+        await ctx.send(f"⚠️ {member.mention}، حاولت أرسلك بالخاص بس إعدادات حسابك مقفلة!")
+
+# =======================================
+# 6. تشغيل السيرفر الداخلي والبوت
 # =======================================
 keep_alive()
 
