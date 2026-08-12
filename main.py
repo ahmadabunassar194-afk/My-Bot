@@ -83,7 +83,7 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
 # الاستخدام: ctransfer @الشخص المبلغ
 # =======================================
 @client.command(name="تحويل")
-async def transfer_money(ctx, amount: str = None, member: discord.Member = None):
+async def transfer_money(ctx, member: discord.Member = None, amount: str = None):
     # 1. حماية البوت من الإدخال الخاطئ لمنع الانطفاء
     if amount is None or member is None:
         await ctx.send("❌ الاستخدام الصحيح: تحويل المبلغ @الشخص")
