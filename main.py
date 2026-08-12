@@ -82,19 +82,12 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
 # 5. أمر تحويل الفلوس (ومراسلة المستلم في الخاص)
 # الاستخدام: ctransfer @الشخص المبلغ
 # =======================================
-@client.command(name="شحن")
-async def transfer_money(ctx, user_id: str = None, amount: int = None):
-    # 1. حماية البوت من الإدخال الناقص
-    if user_id is None or amount is None:
-        await ctx.send("❌ الاستخدام الصحيح: شحن أيدي_الشخص المبلغ\nمثال: `شحن 439281048592019485 1000`")
-        return
-
-    # 2. تنظيف الأيدي لو المستخدم وضع منشن بالخطأ
+    # 2. تنظيف الآيدي لو المستخدم وضع منشن بالخطأ
     user_id = user_id.replace("<@", "").replace(">", "").replace("!", "")
 
     # 3. منع التحويل للنفس
     if user_id == str(ctx.author.id):
-        await ctx.send("❌ ما بتقدر تحول فلوس لنفسك يا غالي!")
+        await ctx.send("❌ ما تقدر تحول فلوس لنفسك يا غالي")
         return
 
     # 4. التحقق من أن المبلغ أكبر من صفر
@@ -103,37 +96,32 @@ async def transfer_money(ctx, user_id: str = None, amount: int = None):
         return
 
     try:
-        # تحويل الأيدي إلى رقم للتعامل مع الدالة والقاموس
+        # تحويل الآيدي إلى رقم للتعامل مع الدالة والقاموس
         target_id = int(user_id)
         
         # 5. جلب الرصيد والتحقق منه
         author_bal = get_balance(ctx.author.id)
-        get_balance(target_id) # التأكد من تسجيل حساب المستلم
+        # (يمكنك هنا استدعاء get_balance(target_id) للتأكد من تسجيل حساب المستلم إذا لزم الأمر)
 
         if author_bal < amount:
-            await ctx.send("❌ رصيدك ما بكفي عشان تعمل هالتحويل")
+            await ctx.send("❌ رصيدك غير كافي عشان تعمل هالتحويل")
             return
 
         # 6. الخصم والإضافة بالخلفية
         user_balances[ctx.author.id] -= amount
         user_balances[target_id] = user_balances.get(target_id, 0) + amount
-        
-        # 7. رسالة نجاح العملية بالديسكورد
+
+        # 7. رسالة نجاح العملية بالديسكورد (في الشات العام)
         await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى <@{target_id}>")
 
-        # 8. إرسال رسالة في الخاص للمستلم بشكل آمن تماماً
-        try:
-            member = await client.fetch_user(target_id)
-            await member.send(f"💰 لقد استلمت **{amount}** عملة من {ctx.author.name}")
-        except:
-            # لو الشخص مقفل الخاص البوت بيتجاهل ولا يطفئ
-            pass
+        # 8. إرسال رسالة الاستلام في نفس الشات العام بدلاً من الخاص
+        await ctx.send(f"💰 نقد استلمت **{amount}** يا <@{target_id}>")
 
     except ValueError:
-        await ctx.send("❌ تأكد من كتابة الأيدي والمبلغ بالأرقام فقط!")
+        await ctx.send("❌ يرجى إدخال آيدي مستخدم صحيح أو عمل منشن صحيح.")
     except Exception as e:
-        print(f"Error in transfer: {e}")
-        await ctx.send("❌ حدث خطأ داخلي أثناء معالجة الحوالة.")
+        # لتفادي توقف البوت في حال حدوث أي خطأ غير متوقع
+        pass
 
 
 # =======================================
