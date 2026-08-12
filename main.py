@@ -82,44 +82,41 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
 # 5. أمر تحويل الفلوس (ومراسلة المستلم في الخاص)
 # الاستخدام: ctransfer @الشخص المبلغ
 # =======================================
-@bot.command(name="تحويل")
-async def transfer(ctx, user_id: str, amount: int):
-    # 2. تنظيف الآيدي لو المستخدم وضع منشن بالخطأ
-    user_id = user_id.replace("<@", "").replace(">", "").replace("!", "")
-
-    # 3. منع التحويل للنفس
-    if user_id == str(ctx.author.id):
-        await ctx.send("❌ ما تقدر تحول فلوس لنفسك يا غالي")
+@client.command(name="transfer")
+async def transfer_money(ctx, member: discord.Member = None, amount: int = None):
+    if member is None or amount is None:
+        await ctx.send("❌ الاستخدام: ctransfer @الشخص المبلغ")
         return
-
-    # 4. التحقق من أن المبلغ أكبر من صفر
+        
+    if member.id == ctx.author.id:
+        await ctx.send("❌ ما بتقدر تحول فلوس لنفسك يا غالي!")
+        return
+        
     if amount <= 0:
         await ctx.send("❌ لازم تحول مبلغ أكبر من صفر!")
         return
-
-    try:
-        # تحويل الآيدي إلى رقم للتعامل مع الدالة والقاموس
-        target_id = int(user_id)
         
-        # 5. جلب الرصيد والتحقق منه
-        author_bal = get_balance(ctx.author.id)
+    author_bal = get_balance(ctx.author.id)
+    get_balance(member.id) # التأكد من وجود حساب للمستلم
+    
+    if author_bal < amount:
+        await ctx.send("❌ رصيدك ما بكفي عشان تعمل هالتحويل!")
+        return
+        
+    # الخصم والإضافة بالخلفية
+    user_balances[ctx.author.id] -= amount
+    user_balances[member.id] += amount
+    
+    # رسالة التأكيد بالشات العام
+    await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى {member.mention}!")
+    
+    # إرسال رسالة خاصة للشخص اللي استلم العملات (مع حماية الكود لو الخاص مقفل)
+    try:
+        await member.send(f"💰 وصلتك حوالة مالية! لقد استلمت `{amount}` عملة من {ctx.author.name} في سيرفر **{ctx.guild.name}**.")
+    except discord.Forbidden:
+        # إذا خاص المستلم مقفل، البوت بيكتب تنبيه خفيف بالشات وبكمل شغل عادي بدون إيرور
+        await ctx.send(f"⚠️ {member.mention}، حاولت أرسلك بالخاص بس إعدادات حسابك مقفلة!")
 
-        if author_bal < amount:
-            await ctx.send("❌ رصيدك غير كافي عشان تعمل هالتحويل")
-            return
-
-        # 6. الخصم والإضافة بالخلفية
-        user_balances[ctx.author.id] -= amount
-        user_balances[target_id] = user_balances.get(target_id, 0) + amount
-
-        # 7 و 8. رسائل النجاح في الشات العام مباشرة
-        await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى <@{target_id}>")
-        await ctx.send(f"💰 نقد استلمت **{amount}** يا <@{target_id}>")
-
-    except ValueError:
-        await ctx.send("❌ يرجى إدخال آيدي مستخدم صحيح أو عمل منشن صحيح.")
-    except Exception as e:
-        pass
 
 
 # =======================================
