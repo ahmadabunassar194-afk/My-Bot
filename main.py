@@ -82,40 +82,50 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
 # 5. أمر تحويل الفلوس (ومراسلة المستلم في الخاص)
 # الاستخدام: ctransfer @الشخص المبلغ
 # =======================================
-@client.command(name="transfer")
-async def transfer_money(ctx, member: discord.Member = None, amount: int = None):
-    if member is None or amount is None:
-        await ctx.send("❌ الاستخدام: ctransfer @الشخص المبلغ")
+@client.command(name="تحويل")
+async def transfer_money(ctx, amount: str = None, member: discord.Member = None):
+    # 1. حماية البوت من الإدخال الخاطئ لمنع الانطفاء
+    if amount is None or member is None:
+        await ctx.send("❌ الاستخدام الصحيح: تحويل المبلغ @الشخص")
         return
-        
+
+    # 2. تحويل المبلغ إلى رقم والتحقق من أنه ليس نصاً
+    try:
+        amount = int(amount)
+    except ValueError:
+        await ctx.send("❌ يرجى كتابة المبلغ بالأرقام فقط!")
+        return
+
+    # 3. منع التحويل للنفس
     if member.id == ctx.author.id:
         await ctx.send("❌ ما بتقدر تحول فلوس لنفسك يا غالي!")
         return
-        
+
+    # 4. التحقق من أن المبلغ أكبر من صفر
     if amount <= 0:
         await ctx.send("❌ لازم تحول مبلغ أكبر من صفر!")
         return
-        
+
+    # 5. جلب الرصيد والتحقق من الحسابات
     author_bal = get_balance(ctx.author.id)
     get_balance(member.id) # التأكد من وجود حساب للمستلم
-    
+
     if author_bal < amount:
-        await ctx.send("❌ رصيدك ما بكفي عشان تعمل هالتحويل!")
+        await ctx.send("❌ رصيدك ما بكفي عشان تعمل هالتحويل")
         return
-        
-    # الخصم والإضافة بالخلفية
+
+    # 6. الخصم والإضافة بالخلفية
     user_balances[ctx.author.id] -= amount
     user_balances[member.id] += amount
     
-    # رسالة التأكيد بالشات العام
-    await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى {member.mention}!")
-    
-    # إرسال رسالة خاصة للشخص اللي استلم العملات (مع حماية الكود لو الخاص مقفل)
+    # 7. رسالة التأكيد بالشات العام
+    await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى {member.mention}")
+
+    # 8. مراسلة المستلم في الخاص مع الحماية لو الخاص مقفل
     try:
-        await member.send(f"💰 وصلتك حوالة مالية! لقد استلمت `{amount}` عملة من {ctx.author.name} في سيرفر **{ctx.guild.name}**.")
+        await member.send(f"💰 لقد استلمت {amount} من {ctx.author.mention}")
     except discord.Forbidden:
-        # إذا خاص المستلم مقفل، البوت بيكتب تنبيه خفيف بالشات وبكمل شغل عادي بدون إيرور
-        await ctx.send(f"⚠️ {member.mention}، حاولت أرسلك بالخاص بس إعدادات حسابك مقفلة!")
+        await ctx.send(f"⚠️ فشل إرسال رسالة خاصة لـ {member.mention} لأن حسابه مقفل، لكن الحوالة وصلت!")
 
 # =======================================
 # 6. تشغيل السيرفر الداخلي والبوت
