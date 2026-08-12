@@ -82,6 +82,8 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
 # 5. أمر تحويل الفلوس (ومراسلة المستلم في الخاص)
 # الاستخدام: ctransfer @الشخص المبلغ
 # =======================================
+@bot.command(name="تحويل")
+async def transfer(ctx, user_id: str, amount: int):
     # 2. تنظيف الآيدي لو المستخدم وضع منشن بالخطأ
     user_id = user_id.replace("<@", "").replace(">", "").replace("!", "")
 
@@ -101,7 +103,6 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
         
         # 5. جلب الرصيد والتحقق منه
         author_bal = get_balance(ctx.author.id)
-        # (يمكنك هنا استدعاء get_balance(target_id) للتأكد من تسجيل حساب المستلم إذا لزم الأمر)
 
         if author_bal < amount:
             await ctx.send("❌ رصيدك غير كافي عشان تعمل هالتحويل")
@@ -111,16 +112,13 @@ async def check_balance_arabic(ctx, member: discord.Member = None):
         user_balances[ctx.author.id] -= amount
         user_balances[target_id] = user_balances.get(target_id, 0) + amount
 
-        # 7. رسالة نجاح العملية بالديسكورد (في الشات العام)
+        # 7 و 8. رسائل النجاح في الشات العام مباشرة
         await ctx.send(f"💸 تم تحويل {amount} بنجاح من {ctx.author.mention} إلى <@{target_id}>")
-
-        # 8. إرسال رسالة الاستلام في نفس الشات العام بدلاً من الخاص
         await ctx.send(f"💰 نقد استلمت **{amount}** يا <@{target_id}>")
 
     except ValueError:
         await ctx.send("❌ يرجى إدخال آيدي مستخدم صحيح أو عمل منشن صحيح.")
     except Exception as e:
-        # لتفادي توقف البوت في حال حدوث أي خطأ غير متوقع
         pass
 
 
